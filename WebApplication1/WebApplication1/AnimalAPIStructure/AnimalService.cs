@@ -17,18 +17,18 @@ public class AnimalService : IAnimalService
 
         using (var connection = new SqlConnection(_sqlConnection))
         {
-            using (var comm = new SqlCommand())
+            using (var sqlCommand = new SqlCommand())
             {
-                comm.Connection = connection;
+                sqlCommand.Connection = connection;
 
                 if (orderBy == "name" || orderBy == "description" || orderBy == "area" || orderBy == "category")
                 {
 
-                    comm.CommandText = $"{sql} ORDER BY {orderBy} ASC";
+                    sqlCommand.CommandText = $"{sql} ORDER BY {orderBy} ASC";
 
                     connection.Open();
 
-                    var reader = comm.ExecuteReader();
+                    var reader = sqlCommand.ExecuteReader();
 
                     if (!reader.HasRows)
                     {
@@ -63,17 +63,17 @@ public class AnimalService : IAnimalService
         {
             using (var connection = new SqlConnection(_sqlConnection))
             {
-                using (var comm = new SqlCommand())
+                using (var sqlCommand = new SqlCommand())
                 {
-                    comm.Connection = connection;
+                    sqlCommand.Connection = connection;
                     connection.Open();
 
-                    comm.CommandText = "INSERT INTO ANIMAL VALUES(@NAME, @DESCRIPTION, @CATEGORY, @AREA)";
-                    comm.Parameters.AddWithValue( "NAME", animal.Name);
-                    comm.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
-                    comm.Parameters.AddWithValue( "CATEGORY", animal.Category);
-                    comm.Parameters.AddWithValue( "AREA", animal.Area);
-                    comm.ExecuteNonQuery();
+                    sqlCommand.CommandText = "INSERT INTO ANIMAL VALUES(@NAME, @DESCRIPTION, @CATEGORY, @AREA)";
+                    sqlCommand.Parameters.AddWithValue( "NAME", animal.Name);
+                    sqlCommand.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
+                    sqlCommand.Parameters.AddWithValue( "CATEGORY", animal.Category);
+                    sqlCommand.Parameters.AddWithValue( "AREA", animal.Area);
+                    sqlCommand.ExecuteNonQuery();
 
                     connection.Close();
                     return 1;
@@ -85,7 +85,26 @@ public class AnimalService : IAnimalService
 
     public int UpdateAnimal(Animal animal, int idAnimal)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_sqlConnection))
+        {
+            using (var sqlCommand = new SqlCommand())
+            {
+                sqlCommand.Connection = connection;
+                connection.Open();
+
+                sqlCommand.CommandText = "UPDATE ANIMAL SET NAME = @NAME, DESCRIPTION = @DESCRIPTION, CATEGORY = @CATEGORY, AREA = @AREA WHERE IDANIMAL = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue( "NAME", animal.Name);
+                sqlCommand.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
+                sqlCommand.Parameters.AddWithValue( "CATEGORY", animal.Category);
+                sqlCommand.Parameters.AddWithValue( "AREA", animal.Area);
+                sqlCommand.Parameters.AddWithValue( "IDANIMAL", idAnimal);
+                int result = sqlCommand.ExecuteNonQuery();
+
+                connection.Close();
+                return result;
+            }
+
+        }
     }
 
     public int DeleteAnimal(int idAnimal)
