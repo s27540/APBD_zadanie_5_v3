@@ -59,7 +59,28 @@ public class AnimalService : IAnimalService
 
     public int AddAnimal(Animal animal)
     {
-        throw new NotImplementedException();
+        if (animal.IdAnimal != 0 || !string.IsNullOrEmpty(animal.Name) || !string.IsNullOrEmpty(animal.Description) || !string.IsNullOrEmpty(animal.Category) || !string.IsNullOrEmpty(animal.Area))
+        {
+            using (var connection = new SqlConnection(_sqlConnection))
+            {
+                using (var comm = new SqlCommand())
+                {
+                    comm.Connection = connection;
+                    connection.Open();
+
+                    comm.CommandText = "INSERT INTO ANIMAL VALUES(@NAME, @DESCRIPTION, @CATEGORY, @AREA)";
+                    comm.Parameters.AddWithValue( "NAME", animal.Name);
+                    comm.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
+                    comm.Parameters.AddWithValue( "CATEGORY", animal.Category);
+                    comm.Parameters.AddWithValue( "AREA", animal.Area);
+                    comm.ExecuteNonQuery();
+
+                    connection.Close();
+                    return 1;
+                }
+            }
+        }
+        return 0;
     }
 
     public int UpdateAnimal(Animal animal, int idAnimal)
