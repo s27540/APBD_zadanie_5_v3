@@ -59,28 +59,35 @@ public class AnimalService : IAnimalService
 
     public int AddAnimal(Animal animal)
     {
-        if (animal.IdAnimal != 0 || !string.IsNullOrEmpty(animal.Name) || !string.IsNullOrEmpty(animal.Description) || !string.IsNullOrEmpty(animal.Category) || !string.IsNullOrEmpty(animal.Area))
+        using (var connection = new SqlConnection(_sqlConnection))
         {
-            using (var connection = new SqlConnection(_sqlConnection))
+            using (var sqlCommand = new SqlCommand())
             {
-                using (var sqlCommand = new SqlCommand())
-                {
-                    sqlCommand.Connection = connection;
-                    connection.Open();
+                sqlCommand.Connection = connection;
+                connection.Open();
 
-                    sqlCommand.CommandText = "INSERT INTO ANIMAL VALUES(@NAME, @DESCRIPTION, @CATEGORY, @AREA)";
-                    sqlCommand.Parameters.AddWithValue( "NAME", animal.Name);
-                    sqlCommand.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
-                    sqlCommand.Parameters.AddWithValue( "CATEGORY", animal.Category);
-                    sqlCommand.Parameters.AddWithValue( "AREA", animal.Area);
-                    sqlCommand.ExecuteNonQuery();
+                
+                sqlCommand.CommandText = "SELECT COUNT(*) FROM ANIMAL WHERE IdAnimal = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue("@IDANIMAL", animal.IdAnimal);
+                int existingCount = (int)sqlCommand.ExecuteScalar();
 
-                    connection.Close();
-                    return 1;
+                if (existingCount > 0)
+                { 
+                    return -1; 
                 }
+
+                sqlCommand.CommandText = "INSERT INTO ANIMAL VALUES(@IDANIMAL, @NAME, @DESCRIPTION, @CATEGORY, @AREA)";
+                sqlCommand.Parameters.AddWithValue("IDANIMAL", animal.IdAnimal);
+                sqlCommand.Parameters.AddWithValue("NAME", animal.Name);
+                sqlCommand.Parameters.AddWithValue("DESCRIPTION", animal.Description);
+                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.Category);
+                sqlCommand.Parameters.AddWithValue("AREA", animal.Area);
+                sqlCommand.ExecuteNonQuery();
+
+                connection.Close();
+                return 1;
             }
         }
-        return 0;
     }
 
     public int UpdateAnimal(Animal animal, int idAnimal)
@@ -92,20 +99,29 @@ public class AnimalService : IAnimalService
                 sqlCommand.Connection = connection;
                 connection.Open();
 
+                sqlCommand.CommandText = "SELECT COUNT(*) FROM ANIMAL WHERE IdAnimal = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue("@IDANIMAL", idAnimal);
+                int existingCount = (int)sqlCommand.ExecuteScalar();
+
+                if (existingCount == 0)
+                {
+                    return -1; 
+                }
+
                 sqlCommand.CommandText = "UPDATE ANIMAL SET NAME = @NAME, DESCRIPTION = @DESCRIPTION, CATEGORY = @CATEGORY, AREA = @AREA WHERE IDANIMAL = @IDANIMAL";
-                sqlCommand.Parameters.AddWithValue( "NAME", animal.Name);
-                sqlCommand.Parameters.AddWithValue( "DESCRIPTION", animal.Description);
-                sqlCommand.Parameters.AddWithValue( "CATEGORY", animal.Category);
-                sqlCommand.Parameters.AddWithValue( "AREA", animal.Area);
-                sqlCommand.Parameters.AddWithValue( "IDANIMAL", idAnimal);
+                sqlCommand.Parameters.AddWithValue("NAME", animal.Name);
+                sqlCommand.Parameters.AddWithValue("DESCRIPTION", animal.Description);
+                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.Category);
+                sqlCommand.Parameters.AddWithValue("AREA", animal.Area);
+                sqlCommand.Parameters.AddWithValue("IDANIMAL", idAnimal);
                 int result = sqlCommand.ExecuteNonQuery();
 
                 connection.Close();
                 return result;
             }
-
         }
     }
+
 
     public int DeleteAnimal(int idAnimal)
     {
@@ -115,14 +131,21 @@ public class AnimalService : IAnimalService
             {
                 sqlCommand.Connection = connection;
                 connection.Open();
-                
-                sqlCommand.CommandText = "DELETE FROM ANIMAL WHERE IDANIMAL = @IDANIMAL";
-                sqlCommand.Parameters.AddWithValue( "IDANIMAL", idAnimal);
 
+                sqlCommand.CommandText = "SELECT COUNT(*) FROM ANIMAL WHERE IdAnimal = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue("@IDANIMAL", idAnimal);
+                int existingCount = (int)sqlCommand.ExecuteScalar();
+
+                if (existingCount == 0)
+                {
+                    return -1; 
+                }
+
+                sqlCommand.CommandText = "DELETE FROM ANIMAL WHERE IDANIMAL = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue("IDANIMAL", idAnimal);
                 int result = sqlCommand.ExecuteNonQuery();
 
                 connection.Close();
-
                 return result;
             }
         }
