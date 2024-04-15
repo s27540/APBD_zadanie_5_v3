@@ -109,6 +109,22 @@ public class AnimalService : IAnimalService
 
     public int DeleteAnimal(int idAnimal)
     {
-        throw new NotImplementedException();
+        using (var connection = new SqlConnection(_sqlConnection))
+        {
+            using (var sqlCommand = new SqlCommand())
+            {
+                sqlCommand.Connection = connection;
+                connection.Open();
+                
+                sqlCommand.CommandText = "DELETE FROM ANIMAL WHERE IDANIMAL = @IDANIMAL";
+                sqlCommand.Parameters.AddWithValue( "IDANIMAL", idAnimal);
+
+                int result = sqlCommand.ExecuteNonQuery();
+
+                connection.Close();
+
+                return result;
+            }
+        }
     }
 }
