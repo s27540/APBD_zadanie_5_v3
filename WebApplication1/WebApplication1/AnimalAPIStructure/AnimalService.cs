@@ -4,7 +4,12 @@ namespace WebApplication1.AnimalAPIStructure;
 
 public class AnimalService : IAnimalService
 {
-    private readonly string _sqlConnection = "Data Source=db-mssql16.pjwstk.edu.pl;Initial Catalog=2019SBD;Integrated Security=True";
+    private readonly IConfiguration _configuration;
+    public AnimalService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public List<Animal> GetAnimals(string orderBy)
     {
         string sql = "SELECT * FROM ANIMAL";
@@ -15,7 +20,7 @@ public class AnimalService : IAnimalService
             orderBy = "name";
         }
 
-        using (var connection = new SqlConnection(_sqlConnection))
+        using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
         {
             using (var sqlCommand = new SqlCommand())
             {
@@ -59,7 +64,7 @@ public class AnimalService : IAnimalService
 
     public int AddAnimal(Animal animal)
     {
-        using (var connection = new SqlConnection(_sqlConnection))
+        using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
         {
             using (var sqlCommand = new SqlCommand())
             {
@@ -92,7 +97,7 @@ public class AnimalService : IAnimalService
 
     public int UpdateAnimal(Animal animal, int idAnimal)
     {
-        using (var connection = new SqlConnection(_sqlConnection))
+        using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
         {
             using (var sqlCommand = new SqlCommand())
             {
@@ -125,7 +130,7 @@ public class AnimalService : IAnimalService
 
     public int DeleteAnimal(int idAnimal)
     {
-        using (var connection = new SqlConnection(_sqlConnection))
+        using (var connection = new SqlConnection(_configuration["ConnectionStrings:DefaultConnection"]))
         {
             using (var sqlCommand = new SqlCommand())
             {
