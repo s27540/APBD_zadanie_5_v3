@@ -8,7 +8,7 @@ public class Animal
 
     public string Description { get; set; }
 
-    public string Category { get; set; }
+    public string CATEGORY { get; set; }
 
-    public string Area { get; set; }
+    public string AREA { get; set; }
 }

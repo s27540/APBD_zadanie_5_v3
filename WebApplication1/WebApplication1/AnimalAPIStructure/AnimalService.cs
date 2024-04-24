@@ -47,8 +47,8 @@ public class AnimalService : IAnimalService
                             IdAnimal = int.Parse( reader["IdAnimal"].ToString() ),
                             Name = reader["Name"].ToString(),
                             Description = reader["Description"].ToString(),
-                            Category = reader["Category"].ToString(),
-                            Area = reader["Area"].ToString()
+                            CATEGORY = reader["Category"].ToString(),
+                            AREA = reader["Area"].ToString()
 
                         } );
                     }
@@ -85,8 +85,8 @@ public class AnimalService : IAnimalService
                 sqlCommand.Parameters.AddWithValue("IDANIMAL", animal.IdAnimal);
                 sqlCommand.Parameters.AddWithValue("NAME", animal.Name);
                 sqlCommand.Parameters.AddWithValue("DESCRIPTION", animal.Description);
-                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.Category);
-                sqlCommand.Parameters.AddWithValue("AREA", animal.Area);
+                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.CATEGORY);
+                sqlCommand.Parameters.AddWithValue("AREA", animal.AREA);
                 sqlCommand.ExecuteNonQuery();
 
                 connection.Close();
@@ -116,8 +116,8 @@ public class AnimalService : IAnimalService
                 sqlCommand.CommandText = "UPDATE ANIMAL SET NAME = @NAME, DESCRIPTION = @DESCRIPTION, CATEGORY = @CATEGORY, AREA = @AREA WHERE IDANIMAL = @IDANIMAL";
                 sqlCommand.Parameters.AddWithValue("NAME", animal.Name);
                 sqlCommand.Parameters.AddWithValue("DESCRIPTION", animal.Description);
-                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.Category);
-                sqlCommand.Parameters.AddWithValue("AREA", animal.Area);
+                sqlCommand.Parameters.AddWithValue("CATEGORY", animal.CATEGORY);
+                sqlCommand.Parameters.AddWithValue("AREA", animal.AREA);
                 sqlCommand.Parameters.AddWithValue("IDANIMAL", idAnimal);
                 int result = sqlCommand.ExecuteNonQuery();
 
